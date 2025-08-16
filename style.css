@@ -1,0 +1,360 @@
+/* ---------------------------
+   RESET & BASE
+--------------------------- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.4;
+  transition: background-color .35s ease, color .35s ease;
+}
+
+/* ---------------------------
+   THEME TOKENS (CSS VARIABLES)
+--------------------------- */
+body.light-mode {
+  --bg: #ffffff;
+  --text: #7b5454;
+  --muted: #6b7280;
+  --border: rgba(0,0,0,.08);
+  --card: #ffffff;
+  --card-alt: #f5f6f7;
+  --card-hover: #f0f1f3;
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
+  --accent: #2563eb;    /* blue */
+  --accent-2: #ef4444;  /* red for destructive */
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+body.dark-mode {
+  --bg: #000000;
+  --text: #f3f4f6;
+  --muted: #a1a1aa;
+  --border: rgba(248, 245, 245, 0.133);
+  --card: #141414;
+  --card-alt: #4f4a4e95;
+  --card-hover: #1b1b1b;
+  --shadow: 0 10px 30px rgba(0,0,0,.45);
+  --accent: #60a5fa;    /* soft blue */
+  --accent-2: #fb7185;  /* soft red */
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* ---------------------------
+   Calendar Icon Fix for Dark Mode
+--------------------------- */
+body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(200%);
+}
+body.light-mode input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+/* Shared design tokens */
+:root {
+  --radius: 16px;
+  --radius-sm: 10px;
+  --pad: 16px;
+  --pad-lg: 22px;
+  --gap: 16px;
+  --gap-lg: 20px;
+  --speed: 220ms cubic-bezier(.2,.8,.2,1);
+}
+
+/* ---------------------------
+   PAGE LAYOUT (CENTERED BLOCK)
+--------------------------- */
+header,
+.task-input,
+.task-columns,
+footer {
+  width: min(100%, 1000px);
+  margin: 16px auto;
+}
+
+header,
+.task-input,
+.task-list {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ---------------------------
+   HEADER + THEME SWITCH
+--------------------------- */
+header {
+  padding: 12px var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+}
+
+header h1 {
+  font-size: 1.6rem;
+  letter-spacing: .3px;
+}
+
+/* Slide switch (left = Light, right = Dark) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 70px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background: var(--card-alt);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: background var(--speed), border-color var(--speed);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.04);
+}
+
+/* Knob */
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 28px;
+  width: 28px;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  transition: transform var(--speed), background var(--speed), border-color var(--speed), box-shadow var(--speed);
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+}
+
+/* Icon label (sun/moon) */
+.slider::after {
+  content: "☀️";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  opacity: .9;
+  transition: opacity var(--speed), left var(--speed), right var(--speed), content var(--speed);
+}
+
+/* Checked = dark mode (knob to the right, icon changes) */
+.switch input:checked + .slider::before {
+  transform: translate(34px, -50%);
+}
+.switch input:checked + .slider::after {
+  content: "🌙";
+  left: 10px;
+  right: auto;
+}
+
+/* Hover/active states for the switch */
+.slider:hover::before { box-shadow: 0 8px 22px rgba(0,0,0,.16); }
+.slider:active::before { transform: translateY(-50%) scale(.96); }
+
+/* ---------------------------
+   TASK INPUT CARD
+--------------------------- */
+.task-input {
+  padding: var(--pad-lg);
+  display: grid;
+  gap: var(--gap);
+  transition: transform var(--speed), background var(--speed), border-color var(--speed);
+}
+.task-input:hover { transform: translateY(-2px); }
+
+.task-input input,
+.task-input textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--card-alt);
+  color: inherit;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color var(--speed), background var(--speed), box-shadow var(--speed), transform var(--speed);
+}
+
+.task-input textarea { min-height: 90px; resize: vertical; }
+
+.task-input input:focus,
+.task-input textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 20%, transparent);
+  background: var(--card);
+  transform: translateY(-1px);
+}
+
+.task-input button {
+  justify-self: start;
+  border: 1px solid var(--border);
+  background: linear-gradient(0deg, color-mix(in oklab, var(--accent) 92%, #fff 8%), var(--accent));
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-size: 0.98rem;
+  cursor: pointer;
+  transition: transform var(--speed), filter var(--speed), box-shadow var(--speed);
+  box-shadow: 0 10px 20px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+.task-input button:hover { transform: translateY(-1px) scale(1.02); filter: brightness(1.05); }
+.task-input button:active { transform: translateY(0) scale(.98); }
+
+/* ---------------------------
+   TWO COLUMNS (RUNNING / COMPLETED)
+--------------------------- */
+.task-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: var(--gap-lg);
+  padding: 2px; /* for better focus shadows */
+}
+
+@media (max-width: 760px) {
+  .task-columns { grid-template-columns: 1fr; }
+}
+
+/* Column cards */
+.task-list {
+  padding: var(--pad);
+  transition: transform var(--speed), background var(--speed), border-color var(--speed);
+}
+.task-list:hover { transform: translateY(-2px); }
+
+.task-list h2 {
+  font-size: 1.1rem;
+  letter-spacing: .2px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border);
+  color: var(--muted);
+}
+
+/* UL reset */
+#runningTasks, #completedTasks { list-style: none; }
+
+/* ---------------------------
+   TASK ITEM
+--------------------------- */
+.task {
+  background: var(--card-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  transition: transform var(--speed), background var(--speed), border-color var(--speed), box-shadow var(--speed);
+  box-shadow: 0 6px 18px rgba(0,0,0,.05);
+  margin-bottom: 10px;
+}
+.task:hover { transform: translateY(-1px) scale(1.01); background: var(--card-hover); }
+.task:active { transform: scale(.995); }
+
+.task-details h3 {
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+.task-details p {
+  font-size: .95rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.task-date {
+  font-size: .82rem;
+  color: var(--muted);
+}
+
+/* When JS marks as completed */
+.completed-task h3,
+.completed-task p { text-decoration: line-through; opacity: .65; }
+
+/* Actions */
+.task-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.task-actions button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1rem;
+  border-radius: 10px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: transform var(--speed), background var(--speed), border-color var(--speed), color var(--speed), box-shadow var(--speed);
+}
+.task-actions button:hover {
+  background: var(--card);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,.08);
+}
+.task-actions button:active { transform: translateY(0); }
+
+/* Make destructive (delete) feel different when emoji present) */
+.task-actions button:has(> span.delete),
+.task-actions button:has(> .delete) { border-color: color-mix(in oklab, var(--accent-2) 40%, var(--border)); }
+
+/* ---------------------------
+   FOOTER
+--------------------------- */
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 12px var(--pad);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ---------------------------
+   ACCESSIBILITY FOCUS RINGS
+--------------------------- */
+.switch input:focus + .slider,
+.task-input button:focus,
+.task-actions button:focus,
+.task-input input:focus,
+.task-input textarea:focus {
+  outline: none;
+}
+
+/* visible focus ring for keyboard users */
+.switch input:focus + .slider,
+.task-input button:focus-visible,
+.task-actions button:focus-visible,
+.task-input input:focus-visible,
+.task-input textarea:focus-visible,
+.task,
+.task-list,
+header {
+  box-shadow:
+    0 0 0 0 transparent,
+    0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent),
+    var(--shadow);
+}
+
+/* ---------------------------
+   SMALL POLISH
+--------------------------- */
+::placeholder {
+  color: color-mix(in oklab, var(--muted) 75%, transparent);
+}
