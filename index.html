@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>To-Do Web App — Clean</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<!-- Default to dark-mode (JS will load saved preference) -->
+<body class="dark-mode">
+
+  <!-- Centered block wrapper (keeps app neat on large screens) -->
+  <div class="container" role="application" aria-label="To Do Application">
+
+    <!-- HEADER -->
+    <header>
+      <h1>📋 My To-Do List</h1>
+
+      <!-- Slide Switch (left = light, right = dark) -->
+      <label class="switch" aria-label="Toggle theme">
+        <input id="themeToggle" type="checkbox" aria-checked="true" />
+        <span class="slider"></span>
+      </label>
+    </header>
+
+    <!-- TASK INPUT (form won't actually submit; prevents accidental reload) -->
+    <section class="task-input" aria-labelledby="addTaskHeading">
+      <h2 id="addTaskHeading" class="visually-hidden">Add a new task</h2>
+
+      <form id="taskForm" onsubmit="return false" autocomplete="off" novalidate>
+        <input
+          id="taskTitle"
+          name="title"
+          type="text"
+          placeholder="Task title — e.g. Finish project report"
+          aria-label="Task title"
+          required
+        />
+
+        <textarea
+          id="taskDesc"
+          name="desc"
+          placeholder="Description (optional). Use Shift+Enter for new line."
+          aria-label="Task description"
+        ></textarea>
+
+        <input
+          id="taskDateTime"
+          name="dateTime"
+          type="datetime-local"
+          aria-label="Due date and time (optional)"
+        />
+
+        <div style="margin-top:10px;">
+          <button id="addTaskBtn" type="button" aria-label="Add task">Add Task</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- OPTIONAL STATS ROW (JS can update these spans) -->
+    <section aria-hidden="false" style="width:min(100%,1000px);margin:8px auto;text-align:center;">
+      <small>
+        Total:
+        <strong id="totalCount">0</strong> • Running:
+        <strong id="runningCount">0</strong> • Completed:
+        <strong id="completedCount">0</strong>
+      </small>
+    </section>
+
+    <!-- TASK COLUMNS -->
+    <main class="task-columns" role="region" aria-label="Tasks">
+
+      <!-- RUNNING TASKS COLUMN -->
+      <section class="task-list" aria-labelledby="runningHeading">
+        <h2 id="runningHeading">🚀 Running Tasks</h2>
+        <ul id="runningTasks" aria-live="polite">
+          <!-- JS will render <li class="task" data-id="..."> items here -->
+          <li class="empty-state">No running tasks — add one above ✨</li>
+        </ul>
+      </section>
+
+      <!-- COMPLETED TASKS COLUMN -->
+      <section class="task-list" aria-labelledby="completedHeading">
+        <h2 id="completedHeading">✅ Completed Tasks</h2>
+        <ul id="completedTasks" aria-live="polite">
+          <!-- JS will render completed items here -->
+          <li class="empty-state">No completed tasks yet 🎯</li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>© <span id="year"></span> To-Do Web App — Created by ABHI M K</p>
+    </footer>
+  </div>
+
+  <noscript>
+    <div style="max-width:1000px;margin:12px auto;padding:12px;border-radius:8px;background:#fffbdd;">
+      JavaScript is required for this app. Please enable JavaScript to use the To-Do features.
+    </div>
+  </noscript>
+
+  <script>
+    /* small inline helper: update year (keeps HTML file standalone) */
+    (function(){ const y = new Date().getFullYear(); const e = document.getElementById('year'); if(e) e.textContent = y; })();
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
